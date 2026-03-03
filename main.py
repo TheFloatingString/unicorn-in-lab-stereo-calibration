@@ -21,9 +21,9 @@ console = Console()
 
 ############
 ##### Sample imgs 1
-chessboard_size = (11, 7)
-square_size = 0.02208  # 22.08 mm per square (in meters)
-image_size = (1025, 576)
+chessboard_size = (5, 3)
+square_size = 0.00916  # 22.08 mm per square (in meters)
+image_size = (640, 480)
 
 left_images = sorted(glob.glob("calib/raw_images/left/*"))
 right_images = sorted(glob.glob("calib/raw_images/right/*"))
@@ -61,35 +61,40 @@ failed_reads = 0
 
 
 def create_status_table():
-    """Create a table showing the last N saved files."""
+    """Create a table showing the last N saved files with compact status."""
     table = Table(
         title=f"Last {LAST_N} Saved Files",
         show_header=True,
         header_style="bold magenta",
     )
-    table.add_column("Index", style="cyan", width=6)
-    table.add_column("Left File", style="green")
-    table.add_column("Right File", style="green")
-    table.add_column("Status", style="yellow")
+    table.add_column("Idx", style="cyan", width=3)
+    table.add_column("Pair", style="green")
+    table.add_column("L", style="cyan", width=2)
+    table.add_column("R", style="cyan", width=2)
 
     for item in saved_files:
-        status_color = "green" if item["valid"] else "red"
-        status_text = "✓ Valid" if item["valid"] else "✗ Invalid"
+        l_color = "green" if item["ret_l"] else "red"
+        r_color = "green" if item["ret_r"] else "red"
+        l_status = "✓" if item["ret_l"] else "✗"
+        r_status = "✓" if item["ret_r"] else "✗"
+        pair_name = item["left"].split("_")[0]
+
         table.add_row(
             str(item["idx"]),
-            item["left"],
-            item["right"],
-            f"[{status_color}]{status_text}[/{status_color}]",
+            pair_name,
+            f"[{l_color}]{l_status}[/{l_color}]",
+            f"[{r_color}]{r_status}[/{r_color}]",
         )
     return table
 
 
 def create_summary():
     """Create summary statistics panel."""
+    total = len(left_images)
+    percentage = (valid_pairs / total * 100) if total > 0 else 0
     summary_text = (
-        f"[bold]Valid Stereo Pairs:[/bold] {valid_pairs}\n"
-        f"[bold]Failed Reads:[/bold] {failed_reads}\n"
-        f"[bold]Total Images:[/bold] {len(left_images)}"
+        f"[bold]Valid Stereo Pairs:[/bold] {valid_pairs}/{total} ({percentage:.1f}%)\n"
+        f"[bold]Failed Reads:[/bold] {failed_reads}"
     )
     return Panel(summary_text, title="Summary", border_style="blue")
 
@@ -116,7 +121,8 @@ with Progress(
                     "idx": i,
                     "left": os.path.basename(l_path),
                     "right": os.path.basename(r_path),
-                    "valid": False,
+                    "ret_l": False,
+                    "ret_r": False,
                 }
             )
             progress.update(task, advance=1)
@@ -160,7 +166,8 @@ with Progress(
                 "idx": i,
                 "left": os.path.basename(l_file),
                 "right": os.path.basename(r_file),
-                "valid": is_valid,
+                "ret_l": ret_l,
+                "ret_r": ret_r,
             }
         )
 
