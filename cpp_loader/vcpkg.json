@@ -1,0 +1,11 @@
+{
+  "name": "stereo-rectify",
+  "version": "0.1.0",
+  "dependencies": [
+    {
+      "name": "opencv4",
+      "features": ["imgproc", "highgui", "imgcodecs"]
+    },
+    "zlib"
+  ]
+}
