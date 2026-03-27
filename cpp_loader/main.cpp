@@ -34,6 +34,7 @@ static cv::Mat npz_to_mat(const cnpy::NpyArray& arr) {
 }
 
 int main() {
+try {
     // -------- LOAD CALIBRATION --------
     cnpy::npz_t data = cnpy::npz_load(CALIB_FILE);
 
@@ -73,4 +74,8 @@ int main() {
     cv::destroyAllWindows();
 
     return 0;
+} catch (const std::exception& e) {
+    std::cerr << "Error: " << e.what() << std::endl;
+    return 1;
+}
 }

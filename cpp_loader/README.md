@@ -6,25 +6,35 @@ C++ implementation of stereo rectification using OpenCV. Loads calibration maps 
 
 - [CMake](https://cmake.org/) 3.16+
 - [Visual Studio Build Tools 2022](https://visualstudio.microsoft.com/downloads/)
-- [vcpkg](https://github.com/microsoft/vcpkg) bootstrapped at `C:/vcpkg`
-
-If vcpkg is not yet set up:
-```powershell
-git clone https://github.com/microsoft/vcpkg.git C:/vcpkg
-C:/vcpkg/bootstrap-vcpkg.bat
-```
+- OpenCV 4.13 (bundled as `opencv-4.13.0-windows.exe` in this folder — includes zlib, no vcpkg needed)
 
 ## Build
 
-### 1. Install dependencies (~15–30 min, one-time)
+### 1. Extract OpenCV (one-time)
+
+Run the self-extracting installer and extract into this folder (`cpp_loader/`):
+
 ```powershell
-C:\vcpkg\vcpkg.exe install --triplet x64-windows
+cd C:\Users\laure\Projects\unicorn-repo-1\stereo_calibration-main\cpp_loader
+.\opencv-4.13.0-windows.exe
 ```
+
+When prompted for the extraction path, set it to:
+```
+C:\Users\laure\Projects\unicorn-repo-1\stereo_calibration-main\cpp_loader
+```
+
+This creates `cpp_loader/opencv/build/` which CMake detects automatically.
 
 ### 2. Configure CMake (~2–5 min, downloads cnpy via FetchContent)
 ```powershell
 cd C:\Users\laure\Projects\unicorn-repo-1\stereo_calibration-main\cpp_loader
-cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake
+cmake -B build -DCMAKE_BUILD_TYPE=Release
+```
+
+If you extracted OpenCV to a different location, pass it explicitly:
+```powershell
+cmake -B build -DOpenCV_DIR="C:/path/to/opencv/build"
 ```
 
 ### 3. Build (~1 min)
