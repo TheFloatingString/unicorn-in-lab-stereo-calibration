@@ -60,8 +60,8 @@ try {
     int w = rect_l.cols;
 
     for (int y = 0; y < h; y += LINE_SPACING) {
-        cv::line(rect_l, {0, y}, {w, y}, {0, 255, 0}, 1);
-        cv::line(rect_r, {0, y}, {w, y}, {0, 255, 0}, 1);
+        cv::line(rect_l, {0, y}, {w, y}, {0, 255, 255}, 1);
+        cv::line(rect_r, {0, y}, {w, y}, {0, 255, 255}, 1);
     }
 
     // -------- COMBINE SIDE-BY-SIDE --------
@@ -69,7 +69,7 @@ try {
     cv::hconcat(rect_l, rect_r, combined);
 
     // -------- SHOW --------
-    cv::imshow("Rectified Left | Rectified Right", combined);
+    cv::imshow("Rectified Left <|> Rectified Right", combined);
     cv::waitKey(0);
     cv::destroyAllWindows();
 
