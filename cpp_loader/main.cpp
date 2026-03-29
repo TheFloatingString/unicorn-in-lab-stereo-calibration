@@ -1,6 +1,7 @@
 #include <opencv2/opencv.hpp>
 #include <cnpy.h>
 #include <string>
+#include <sstream>
 #include <stdexcept>
 #include <iostream>
 
@@ -35,6 +36,26 @@ static cv::Mat npz_to_mat(const cnpy::NpyArray& arr) {
 
 int main() {
 try {
+    // print out available cameras as detected by opencv
+    int numberOfDevices = 0;
+    while (true) {
+      cv::VideoCapture cap(numberOfDevices);
+      if (!cap.isOpened()) {
+        break;
+      }
+      std::cout << "Camera found at index " << numberOfDevices;
+      // capture and save image frame as debug 
+      cv::Mat frame;
+      cap >> frame;
+
+      const std::string filename = "cap_at_device_" + std::to_string(numberOfDevices) + ".png";
+      bool success = cv::imwrite(filename, frame);
+      cap.release();
+      numberOfDevices++;
+    }
+
+
+
     // -------- LOAD CALIBRATION --------
     cnpy::npz_t data = cnpy::npz_load(CALIB_FILE);
 
